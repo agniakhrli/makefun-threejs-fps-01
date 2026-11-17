@@ -20,6 +20,17 @@ if (screenshotFiles.length < 3 || screenshotFiles.length > 4) {
   throw new Error(`screenshots/ must hold 3-4 files, found ${screenshotFiles.length}`);
 }
 
+// Verify game files exist before proceeding
+const gameDir = join(here, 'game');
+if (!existsSync(join(gameDir, 'index.html'))) {
+  throw new Error('Missing game/index.html; cannot ship entry without game entrypoint.');
+}
+const threeModulePath = join(gameDir, 'vendor', 'three', 'three.module.min.js');
+const threeCorePath = join(gameDir, 'vendor', 'three', 'three.core.min.js');
+if (!existsSync(threeModulePath) || !existsSync(threeCorePath)) {
+  throw new Error('Missing vendored three.js files in game/vendor/three/; cannot ship entry.');
+}
+
 function countFiles(dir: string): number {
   let count = 0;
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
